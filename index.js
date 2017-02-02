@@ -7,10 +7,26 @@ var Brain = require('./src/brain');
 var Ears = require('./src/ears');
 var builtinPhrases = require('./builtins');
 
+var Botkit = require('botkit');
+
 var Bottie = {
   Brain: new Brain(),
   Ears: new Ears(process.env.SLACK_TOKEN)
 };
+
+
+var controller = Botkit.slackbot({
+  debug: false
+  //include "log: false" to disable logging
+  //or a "logLevel" integer from 0 to 7 to adjust logging verbosity
+});
+
+controller.spawn({
+  token: "xoxb-135409202743-6lRajobEMnSd9jZLAleODEFJ",
+}).startRTM()
+
+
+
 
 var customPhrasesText;
 var customPhrases;
@@ -64,3 +80,11 @@ function eachKey(object, callback) {
     callback(key, object[key]);
   });
 }
+
+
+
+
+
+controller.hears('','direct_message,direct_mention,ambient',function(bot,message) {
+	Train(Bottie.Brain, bot, message);
+});
